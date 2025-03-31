@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: Movie Ticket API
+  description: API for booking movie tickets and managing seats
+  version: 1.0.0
+
+paths:
+  /movies:
+    get:
+      summary: Get available movies
+      parameters:
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: List of movies
+        "404":
+          description: No movies found
+
+  /seats:
+    get:
+      summary: Check available seats
+      parameters:
+        - name: movie_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: time
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Seat list
+        "404":
+          description: Showtime not found
+
+  /bookings:
+    post:
+      summary: Create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                movie_id:
+                  type: string
+                time:
+                  type: string
+                seats:
+                  type: array
+                  items:
+                    type: string
+                payment_info:
+                  type: object
+                  properties:
+                    card_number:
+                      type: string
+                    expiry:
+                      type: string
+      responses:
+        "201":
+          description: Booking confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  booking_id:
+                    type: string
+                  total:
+                    type: number
+        "400":
+          description: Invalid request
+
+  /bookings/{booking_id}:
+    delete:
+      summary: Cancel booking
+      parameters:
+        - name: booking_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Booking cancelled
+        "400":
+          description: Invalid booking ID
+        "404":
+          description: Booking not found
